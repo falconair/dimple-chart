@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>dimple-chart demo</title>
+
+    <!-- Importing Web Component's Polyfill -->
+    <script src="bower_components/platform/platform.js"></script>
+
+    <!-- Importing Custom Elements -->
+    <link rel="import" href="src/dimple-chart.html">
+    <script>
+      var dataRepo ={};
+      dataRepo['data'] = [
+        { "Word":"Hello", "Awesomeness":2000 },
+        { "Word":"World", "Awesomeness":3000 }
+      ];
+    </script>
+</head>
+<body>
+
+    <!-- Using Custom Elements -->
+    <dimple-chart data="data" height="300" width="300" margin-bottom="15%" type="bar">
+      <dimple-axis position="y" type="measure" field="Awesomeness"></dimple-axis>
+      <dimple-axis position="x" type="category" field="Word" orderBy="Word"></dimple-axis>
+      <dimple-legend x="10" y="10" width="500" height="30" ></dimple-legend>
+    </dimple-chart>
+    <dimple-chart data="data" height="300" width="300" margin-bottom="15%">
+      <dimple-axis position="y" type="measure" field="Awesomeness" display="false"></dimple-axis>
+      <dimple-axis position="x" type="category" field="Word" title="this is a title"></dimple-axis>
+      <dimple-series type="bar"></dimple-series>
+    </dimple-chart>
+
+</body>
+</html>

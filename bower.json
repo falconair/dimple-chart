@@ -1,0 +1,25 @@
+{
+    "name": "dimple-chart",
+    "version": "0.0.1",
+    "description": "Use <dimple-chart...> tag in HTML to easily display charts",
+    "license": "MIT",
+    "main": "dist/dimple-chart.html",
+    "keywords": [
+        "x-tag",
+        "web-components",
+        "dimple",
+        "dimplejs",
+        "chart"
+    ],
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "bower_components"
+    ],
+    "dependencies": {
+        "platform": "Polymer/platform#~0.2.3",
+        "x-tag-core": "~0.9.5",
+        "d3": "3.0.0",
+        "dimple": "2.0.0"
+    }
+}
