@@ -9,6 +9,7 @@
         //displayTitle: { get: function(){ return this.getAttribute("displayTitle") || "true"; } },
         display: { get: function(){ return this.getAttribute("display") || "true"; } },
         orderBy: { get: function(){ return this.getAttribute("orderBy"); } },
+        orderByReverse: { get: function(){ return this.getAttribute("orderByReverse") || "false"; } },
       }
     });
 
@@ -52,6 +53,7 @@
                 //var displayTitle = axs.displayTitle === "true";
                 var display = axs.display === "true";
                 var orderBy = axs.orderBy;
+                var orderByReverse = axs.orderByReverse;
 
                 var _axis = null;
                 if(type === "measure"){
@@ -72,7 +74,7 @@
 
                 if(_axis.title !== null) _axis.title = title;
                 _axis.hidden = !display;
-                if(orderBy !== null) _axis.addOrderRule(orderBy);
+                if(orderBy !== null) _axis.addOrderRule(orderBy, orderByReverse);
 
               }
 
@@ -113,8 +115,8 @@
           type: { get: function(){ return this.getAttribute("type") || "bar"; }, },
           'margin-top': { get: function(){ return this.getAttribute("margin-top") || '10%'; } },
           'margin-bottom': { get: function(){ return this.getAttribute("margin-bottom") || '15%'; } },
-          'margin-left': { get: function(){ return this.getAttribute("margin-left") || '10%'; } },
-          'margin-right': { get: function(){ return this.getAttribute("margin-right") || '10%'; } },
+          'margin-left': { get: function(){ return this.getAttribute("margin-left") || '10'; } },
+          'margin-right': { get: function(){ return this.getAttribute("margin-right") || '10'; } },
         },
         methods: {}
     });
