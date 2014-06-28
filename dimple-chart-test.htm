@@ -6,6 +6,11 @@
   <script src="js/x-tag-core.min.js"></script>
   <script src="dimple-chart.js"></script>
   <script>
+    document.addEventListener('WebComponentsReady',function(d){
+      console.log('Web components ready');
+    });
+
+
     var dataRepo ={};
     dataRepo['data'] = [
       { "Word":"Hello", "Awesomeness":2000 },
