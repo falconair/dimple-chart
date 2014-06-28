@@ -1,4 +1,35 @@
 (function() {
+
+    xtag.register('dimple-axis',{
+      accessors: {
+        position: { get: function(){ return this.getAttribute("position"); } },
+        type: { get: function(){ return this.getAttribute("type") || "measure"; } },
+        field: { get: function(){ return this.getAttribute("field") || "bar"; } },
+        title: { get: function(){ return this.getAttribute("title") ; } },
+        //displayTitle: { get: function(){ return this.getAttribute("displayTitle") || "true"; } },
+        display: { get: function(){ return this.getAttribute("display") || "true"; } },
+        orderBy: { get: function(){ return this.getAttribute("orderBy"); } },
+      }
+    });
+
+    xtag.register('dimple-series',{
+      accessors: {
+        series: { get: function(){ return this.getAttribute("series") || null; } },
+        type: { get: function(){ return this.getAttribute("type") || "bar"; } },
+      }
+    });
+
+    xtag.register('dimple-legend',{
+      accessors: {
+        x: { get: function(){ return this.getAttribute("x"); } },
+        y: { get: function(){ return this.getAttribute("y"); } },
+        width: { get: function(){ return this.getAttribute("width"); } },
+        height: { get: function(){ return this.getAttribute("height"); } },
+        horizontalAlign: { get: function(){ return this.getAttribute("horizontalAlign") || 'left'; } },
+        series: { get: function(){ return this.getAttribute("series") || null; } },
+      }
+    });
+
     xtag.register('dimple-chart', {
         lifecycle: {
             // Fires when an instance of the element is created
@@ -88,33 +119,4 @@
         methods: {}
     });
 
-    xtag.register('dimple-axis',{
-      accessors: {
-        position: { get: function(){ return this.getAttribute("position"); } },
-        type: { get: function(){ return this.getAttribute("type") || "measure"; } },
-        field: { get: function(){ return this.getAttribute("field") || "bar"; } },
-        title: { get: function(){ return this.getAttribute("title") ; } },
-        //displayTitle: { get: function(){ return this.getAttribute("displayTitle") || "true"; } },
-        display: { get: function(){ return this.getAttribute("display") || "true"; } },
-        orderBy: { get: function(){ return this.getAttribute("orderBy"); } },
-      }
-    });
-
-    xtag.register('dimple-series',{
-      accessors: {
-        series: { get: function(){ return this.getAttribute("series") || null; } },
-        type: { get: function(){ return this.getAttribute("type") || "bar"; } },
-      }
-    });
-
-    xtag.register('dimple-legend',{
-      accessors: {
-        x: { get: function(){ return this.getAttribute("x"); } },
-        y: { get: function(){ return this.getAttribute("y"); } },
-        width: { get: function(){ return this.getAttribute("width"); } },
-        height: { get: function(){ return this.getAttribute("height"); } },
-        horizontalAlign: { get: function(){ return this.getAttribute("horizontalAlign") || 'left'; } },
-        series: { get: function(){ return this.getAttribute("series") || null; } },
-      }
-    });
 }());
