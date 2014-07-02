@@ -57,22 +57,23 @@ document.addEventListener('WebComponentsReady',function() {
                 var orderBy = axs.orderBy;
                 var orderByReverse = axs.orderByReverse;
                 var tickFormat = axs.tickFormat;
+                var field = axs.field.split(',');
 
                 var _axis = null;
                 if(type === "measure"){
-                  _axis = chart.addMeasureAxis(axs.position, axs.field);
+                  _axis = chart.addMeasureAxis(axs.position, field);
                 }
                 else if(type === "category"){
-                  _axis = chart.addCategoryAxis(axs.position, axs.field);
+                  _axis = chart.addCategoryAxis(axs.position, field);
                 }
                 else if(type === "percent"){
-                  _axis = chart.addPercentAxis(axs.position, axs.field);
+                  _axis = chart.addPercentAxis(axs.position, field);
                 }
                 else if(type === "color"){
-                  _axis = chart.addColorAxis(axs.position, axs.field);
+                  _axis = chart.addColorAxis(axs.position, field);
                 }
                 else if(type === "log"){
-                  _axis = chart.addLogAxis(axs.position, axs.field);
+                  _axis = chart.addLogAxis(axs.position, field);
                 }
 
                 if(_axis.title !== null) _axis.title = title;
@@ -89,7 +90,8 @@ document.addEventListener('WebComponentsReady',function() {
                 var type = ser.type;
                 var stacked = ser.stacked;
                 var _series = chart.addSeries(series,dimple.plot[type]);
-                if(stacked !== null) stacked === "true"? _series.stacked = true : _series.stacked = false;
+                if(stacked === null || stacked ==="true") _series.stacked = true;
+                else _series.stacked = false;
               }
 
               var dimple_legend = xtag.queryChildren(this,'dimple-legend');// zero or one
