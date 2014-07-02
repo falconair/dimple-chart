@@ -1,4 +1,4 @@
-(function() {
+document.addEventListener('WebComponentsReady',function() {
 
     xtag.register('dimple-axis',{
       accessors: {
@@ -10,6 +10,7 @@
         display: { get: function(){ return this.getAttribute("display") || "true"; } },
         orderBy: { get: function(){ return this.getAttribute("orderBy"); } },
         orderByReverse: { get: function(){ return this.getAttribute("orderByReverse") || "false"; } },
+        tickFormat: { get: function(){ return this.getAttribute("tickFormat"); } },
       }
     });
 
@@ -17,6 +18,7 @@
       accessors: {
         series: { get: function(){ return this.getAttribute("series") || null; } },
         type: { get: function(){ return this.getAttribute("type") || "bar"; } },
+        stacked: { get: function(){ return this.getAttribute("stacked") ; } },
       }
     });
 
@@ -54,6 +56,7 @@
                 var display = axs.display === "true";
                 var orderBy = axs.orderBy;
                 var orderByReverse = axs.orderByReverse;
+                var tickFormat = axs.tickFormat;
 
                 var _axis = null;
                 if(type === "measure"){
@@ -75,6 +78,7 @@
                 if(_axis.title !== null) _axis.title = title;
                 _axis.hidden = !display;
                 if(orderBy !== null) _axis.addOrderRule(orderBy, orderByReverse);
+                if(tickFormat !== null) _axis.tickFormat = tickFormat;
 
               }
 
@@ -83,7 +87,9 @@
                 var ser = dimple_series[i];
                 var series = ser.series === null ? null : ser.series.split(',');
                 var type = ser.type;
-                chart.addSeries(series,dimple.plot[type]);
+                var stacked = ser.stacked;
+                var _series = chart.addSeries(series,dimple.plot[type]);
+                if(stacked !== null) stacked === "true"? _series.stacked = true : _series.stacked = false;
               }
 
               var dimple_legend = xtag.queryChildren(this,'dimple-legend');// zero or one
@@ -121,4 +127,4 @@
         methods: {}
     });
 
-}());
+});
