@@ -9,8 +9,9 @@ document.addEventListener('WebComponentsReady',function() {
         //displayTitle: { get: function(){ return this.getAttribute("displayTitle") || "true"; } },
         display: { get: function(){ return this.getAttribute("display") || "true"; } },
         orderBy: { get: function(){ return this.getAttribute("orderBy"); } },
-        orderByReverse: { get: function(){ return this.getAttribute("orderByReverse") || "false"; } },
+        orderByReverse: { get: function(){ return this.getAttribute("orderByReverse"); } },
         tickFormat: { get: function(){ return this.getAttribute("tickFormat"); } },
+        displayBarValues: { get: function(){ return this.getAttribute("displayBarValues"); } },
       }
     });
 
@@ -54,10 +55,10 @@ document.addEventListener('WebComponentsReady',function() {
                 var title = axs.title;
                 //var displayTitle = axs.displayTitle === "true";
                 var display = axs.display === "true";
-                var orderBy = axs.orderBy;
+                var orderBy = axs.orderBy === null? null : axs.orderBy.split(',');
                 var orderByReverse = axs.orderByReverse;
                 var tickFormat = axs.tickFormat;
-                var field = axs.field.split(',');
+                var field = axs.field === null ? null : axs.field.split(',');
 
                 var _axis = null;
                 if(type === "measure"){
@@ -78,18 +79,23 @@ document.addEventListener('WebComponentsReady',function() {
 
                 if(_axis.title !== null) _axis.title = title;
                 _axis.hidden = !display;
-                if(orderBy !== null) _axis.addOrderRule(orderBy, orderByReverse);
+                if(orderBy !== null){
+                  if(orderByReverse !== null) _axis.addOrderRule(orderBy, orderByReverse);
+                  else _axis.addOrderRule(orderBy);
+                }
                 if(tickFormat !== null) _axis.tickFormat = tickFormat;
 
               }
 
+              //TODO: There should only be a single chart series
               var dimple_series = xtag.queryChildren(this,'dimple-series');
+              var _series = null;
               for(var i=0; i<dimple_series.length;i++){
                 var ser = dimple_series[i];
                 var series = ser.series === null ? null : ser.series.split(',');
                 var type = ser.type;
                 var stacked = ser.stacked;
-                var _series = chart.addSeries(series,dimple.plot[type]);
+                _series = chart.addSeries(series,dimple.plot[type]);
                 if(stacked === null || stacked ==="true") _series.stacked = true;
                 else _series.stacked = false;
               }
@@ -100,13 +106,48 @@ document.addEventListener('WebComponentsReady',function() {
                 chart.addLegend(lgd.x,lgd.y,lgd.width,lgd.height,lgd.horizontalAlign,lgd.series);
               }
 
-
               if(dimple_series.length == 0){
                 chart.addSeries(null, dimple.plot[this.type]);
               }
 
               this.xtag.chart = chart;
               chart.draw();
+
+              var chartSeries = _series;
+              //add in-line labels to bar charts
+              //This is custom code, not part of dimple.
+              //TODO: make it work for vertical bar chart as well
+              /*if (displayBarValues && chartSeries !== null) {
+                  chartSeries.shapes.each(function (d) {
+
+                      var value = "";
+                      if (d.yValue > 1000000000) {
+                          value = d3.format(",.1f")(d.yValue / 1000000) + "b";
+                      }
+                      else if (d.yValue > 1000000) {
+                          value = d3.format(",.1f")(d.yValue / 1000000) + "m";
+                      }
+                      else if (d.yValue > 1000) {
+                          value = d3.format(",.1f")(d.yValue / 1000000) + "k";
+                      } else {
+                          value = d3.format(",.1f")(d.yValue);
+                      }
+
+                      // Get the shape as a d3 selection
+                      var shape = d3.select(this),
+                          barHeight = chartYAxis._scale(d.height);
+                          barWidth = chartXAxis._scale(d.width);
+
+                      svg.append("text")
+                          .attr("x", (parseFloat(shape.attr("x")) + (parseFloat(shape.attr("width"))) / 2 ))
+                          .attr("y", barHeight > 20 ? barHeight - 15 : barHeight + 15)
+                          .style("text-anchor", "middle")
+                          .style("font-size", "10px")
+                          .style("font-family", "sans-serif")
+                          .style("opacity", 0.6)
+                          .text(value);
+                  });
+              }*/
             },
 
             // Fires when an instance was removed from the document
