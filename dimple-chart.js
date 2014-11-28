@@ -20,6 +20,9 @@ document.addEventListener('WebComponentsReady',function() {
         series: { get: function(){ return this.getAttribute("series") || null; } },
         type: { get: function(){ return this.getAttribute("type") || "bar"; } },
         stacked: { get: function(){ return this.getAttribute("stacked") ; } },
+        radius: { get: function(){ return this.getAttribute("radius") ; } },
+        innerRadius: { get: function(){ return this.getAttribute("innerRadius") ; } },
+        outerRadius: { get: function(){ return this.getAttribute("outerRadius") ; } },
       }
     });
 
@@ -95,9 +98,15 @@ document.addEventListener('WebComponentsReady',function() {
                 var series = ser.series === null ? null : ser.series.split(',');
                 var type = ser.type;
                 var stacked = ser.stacked;
+                var radius = ser.radius;
+                var innerRadius = ser.innerRadius;
+                var outerRadius = ser.outerRadius;
                 _series = chart.addSeries(series,dimple.plot[type]);
                 if(stacked === null || stacked ==="true") _series.stacked = true;
                 else _series.stacked = false;
+                if(radius !== null) _series.radius = radius;
+                if(innerRadius !== null) _series.innerRadius = innerRadius;
+                if(outerRadius !== null) _series.outerRadius = outerRadius;
               }
 
               var dimple_legend = xtag.queryChildren(this,'dimple-legend');// zero or one
