@@ -12,6 +12,7 @@ document.addEventListener('WebComponentsReady',function() {
         orderByReverse: { get: function(){ return this.getAttribute("orderByReverse"); } },
         tickFormat: { get: function(){ return this.getAttribute("tickFormat"); } },
         displayBarValues: { get: function(){ return this.getAttribute("displayBarValues"); } },
+        svgTransform: { get: function(){ return this.getAttribute("svgTransform"); } },
       }
     });
 
@@ -52,6 +53,7 @@ document.addEventListener('WebComponentsReady',function() {
               chart.setMargins(this['margin-left'],this['margin-top'],this['margin-right'],this['margin-bottom']);
 
               var dimple_axes = xtag.queryChildren(this,'dimple-axis');
+              var axesToModifyAfterDraw = [];
               for(var i = 0; i<dimple_axes.length; i++){
                 var axs = dimple_axes[i];
                 var type = axs.type || "measure";
@@ -62,6 +64,7 @@ document.addEventListener('WebComponentsReady',function() {
                 var orderByReverse = axs.orderByReverse;
                 var tickFormat = axs.tickFormat;
                 var field = axs.field === null ? null : axs.field.split(',');
+                var svgTransform = axs.svgTransform;
 
                 var _axis = null;
                 if(type === "measure"){
@@ -87,6 +90,7 @@ document.addEventListener('WebComponentsReady',function() {
                   else _axis.addOrderRule(orderBy);
                 }
                 if(tickFormat !== null) _axis.tickFormat = tickFormat;
+                if(svgTransform !== null) axesToModifyAfterDraw.push([_axis,svgTransform]);
 
               }
 
@@ -121,6 +125,17 @@ document.addEventListener('WebComponentsReady',function() {
 
               this.xtag.chart = chart;
               chart.draw();
+
+              //shapes can't be accessed until .draw() has been called
+              for(var i=0; i<axesToModifyAfterDraw.length;i++){
+                _axis = axesToModifyAfterDraw[i][0];
+                svgTransform = axesToModifyAfterDraw[i][1];
+                _axis.shapes.selectAll('text').attr('transform',
+                  function(d){
+                    return d3.select(this).attr('transform') + svgTransform;
+                  });
+
+              }
 
               var chartSeries = _series;
               //add in-line labels to bar charts
