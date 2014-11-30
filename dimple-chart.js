@@ -90,7 +90,10 @@ document.addEventListener('WebComponentsReady',function() {
                   else _axis.addOrderRule(orderBy);
                 }
                 if(tickFormat !== null) _axis.tickFormat = tickFormat;
-                if(svgTransform !== null) axesToModifyAfterDraw.push([_axis,svgTransform]);
+                if(svgTransform !== null){
+                  //svgTransform="translate(20, 10) rotate(90)...
+                   axesToModifyAfterDraw.push([_axis,svgTransform]);
+                }
 
               }
 
