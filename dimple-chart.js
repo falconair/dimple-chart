@@ -2,17 +2,17 @@ document.addEventListener('WebComponentsReady',function() {
 
     xtag.register('dimple-axis',{
       accessors: {
-        position: { get: function(){ return this.getAttribute("position"); } },
+        position: { get: function(){ return this.getAttribute("position") || 'x'; } },
         type: { get: function(){ return this.getAttribute("type") || "measure"; } },
         field: { get: function(){ return this.getAttribute("field") || "bar"; } },
-        title: { get: function(){ return this.getAttribute("title") ; } },
+        title: { get: function(){ return this.getAttribute("title") || null; } },
         //displayTitle: { get: function(){ return this.getAttribute("displayTitle") || "true"; } },
         display: { get: function(){ return this.getAttribute("display") || "true"; } },
-        orderBy: { get: function(){ return this.getAttribute("orderBy"); } },
-        orderByReverse: { get: function(){ return this.getAttribute("orderByReverse"); } },
-        tickFormat: { get: function(){ return this.getAttribute("tickFormat"); } },
-        displayBarValues: { get: function(){ return this.getAttribute("displayBarValues"); } },
-        svgTransform: { get: function(){ return this.getAttribute("svgTransform"); } },
+        orderBy: { get: function(){ return this.getAttribute("orderBy") || null; } },
+        orderByReverse: { get: function(){ return this.getAttribute("orderByReverse") || null; } },
+        tickFormat: { get: function(){ return this.getAttribute("tickFormat") || null; } },
+        displayBarValues: { get: function(){ return this.getAttribute("displayBarValues") || null; } },
+        svgTransform: { get: function(){ return this.getAttribute("svgTransform") || null; } },
       }
     });
 
@@ -46,27 +46,40 @@ document.addEventListener('WebComponentsReady',function() {
             // Fires when an instance was inserted into the document
             inserted: function() {
 
+              var dimple_axes = xtag.queryChildren(this,'dimple-axis');
+              var dimple_series = xtag.queryChildren(this,'dimple-series');
+              var dimple_legend = xtag.queryChildren(this,'dimple-legend');// zero or one
+
+              if(this['debug']==='true'){
+                console.log('==========Adding chart:'+this['chart-desc']+'==========');
+
+                for(var i=0; i< dimple_axes.length;i++){
+                  var axs = dimple_axes[i];
+                  console.log('Axis position:'+axs.position+', type:'+axs.type+', field:'+axs.field+', title:'+axs.title+', display:'+axs.display+', orderBy:'+axs.orderBy+', orderByReverse:'+axs.orderByReverse+', tickFormat:'+axs.tickFormat+', displayBarValues:'+axs.displayBarValues+', svgTransform:'+axs.svgTransform);
+                }
+
+                for(i = 0; i< dimple_series.length;i++){
+                  var ser = dimple_series[i];
+                  console.log('Series series:'+ser.series+', type:'+ser.type+', stacked:'+ser.stacked+', radius:'+ser.radius+', innerRadius:'+ser.innerRadius+', outerRadius:'+ser.outerRadius);
+                }
+              }
+
               this.innerHTML = '<svg width='+this.width+' height='+this.height+'></svg>'+this.innerHTML;
               this.xtag.svg = this.firstElementChild;
 
               var chart = new dimple.chart(d3.select(this.xtag.svg), this.data);
               chart.setMargins(this['margin-left'],this['margin-top'],this['margin-right'],this['margin-bottom']);
 
-              var dimple_axes = xtag.queryChildren(this,'dimple-axis');
               var axesToModifyAfterDraw = [];
               for(var i = 0; i<dimple_axes.length; i++){
                 var axs = dimple_axes[i];
-                var type = axs.type || "measure";
-                var title = axs.title;
-                //var displayTitle = axs.displayTitle === "true";
+                var type = axs.type ;
                 var display = axs.display === "true";
-                var orderBy = axs.orderBy === null? null : axs.orderBy.split(',');
-                var orderByReverse = axs.orderByReverse;
-                var tickFormat = axs.tickFormat;
-                var field = axs.field === null ? null : axs.field.split(',');
-                var svgTransform = axs.svgTransform;
+                var orderBy = axs.orderBy === null? null : axs.orderBy;//.split(',');
+                var field = axs.field === null ? null : axs.field;//.split(',');
 
                 var _axis = null;
+
                 if(type === "measure"){
                   _axis = chart.addMeasureAxis(axs.position, field);
                 }
@@ -82,23 +95,24 @@ document.addEventListener('WebComponentsReady',function() {
                 else if(type === "log"){
                   _axis = chart.addLogAxis(axs.position, field);
                 }
+                else{
+                  console.warn('Axis type "'+type+'" was not expected');
+                }
 
-                if(_axis.title !== null) _axis.title = title;
+                if(_axis.title !== null && _axis.title !== '' ) _axis.title = axs.title;
                 _axis.hidden = !display;
-                if(orderBy !== null){
-                  if(orderByReverse !== null) _axis.addOrderRule(orderBy, orderByReverse);
-                  else _axis.addOrderRule(orderBy);
+                if(axs.orderBy !== null){
+                  if(axs.orderByReverse !== null) _axis.addOrderRule(axs.orderBy, axs.orderByReverse);
+                  else _axis.addOrderRule(axs.orderBy);
                 }
-                if(tickFormat !== null) _axis.tickFormat = tickFormat;
-                if(svgTransform !== null){
-                  //svgTransform="translate(20, 10) rotate(90)...
-                   axesToModifyAfterDraw.push([_axis,svgTransform]);
-                }
+                if(axs.tickFormat !== null) _axis.tickFormat = axs.tickFormat;
+                if(axs.svgTransform !== null) axesToModifyAfterDraw.push([_axis,axs.svgTransform]);
 
               }
 
+
+
               //TODO: There should only be a single chart series
-              var dimple_series = xtag.queryChildren(this,'dimple-series');
               var _series = null;
               for(var i=0; i<dimple_series.length;i++){
                 var ser = dimple_series[i];
@@ -116,7 +130,7 @@ document.addEventListener('WebComponentsReady',function() {
                 if(outerRadius !== null) _series.outerRadius = outerRadius;
               }
 
-              var dimple_legend = xtag.queryChildren(this,'dimple-legend');// zero or one
+
               for(var i=0; i<dimple_legend.length;i++){
                 var lgd = dimple_legend[i];
                 chart.addLegend(lgd.x,lgd.y,lgd.width,lgd.height,lgd.horizontalAlign,lgd.series);
@@ -193,6 +207,8 @@ document.addEventListener('WebComponentsReady',function() {
           'margin-bottom': { get: function(){ return this.getAttribute("margin-bottom") || '15%'; } },
           'margin-left': { get: function(){ return this.getAttribute("margin-left") || '10'; } },
           'margin-right': { get: function(){ return this.getAttribute("margin-right") || '10'; } },
+          'chart-desc': { get: function(){ return this.getAttribute("chart-desc") || ''; } },
+          'debug': { get: function(){ return this.getAttribute("debug") || 'false'; } },
         },
         methods: {}
     });
